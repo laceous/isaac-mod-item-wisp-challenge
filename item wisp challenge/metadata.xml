@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <name>Item Wisp Challenge</name>
+    <directory>item wisp challenge</directory>
+    <id>2966818059</id>
+    <description>In this challenge, any items you pick up that can be summoned by Lemegeton will be converted into item wisps. Protect them or lose them!
+
+You'll start as Eden with random items. Choose your destination from the challenge menu (Mom, It Lives, Mother, Blue Baby, or The Lamb).
+
+Mod Config Menu provides some options:
+[list]
+    [*]Choose how the items converted into wisps will orbit the player. In 3 layers: like Lemegeton, but you're limited to 26 wisps. In 1 layer: unlimited wisps. This only applies to new wisps.
+    [*]To make this a little more fair, you can choose to randomly receive a single-use Lemegeton in a consumable slot. It'll disappear once you leave the current room, so use it or lose it! The behavior is similar to the Dice Bag trinket.
+[/list]
+
+Note: If you quit/continue then the 3 layers orbiting the player will turn into a single layer and allow you to bypass the wisp limit later on in your run. I'm not sure if this is a bug or a feature, but it's how the game works.
+
+Note: The Dice Bag trinket can override the single-use Lemegeton.
+
+Recommended mods that pair well with this one:
+[list]
+    [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=2881588359]Lemegeton Wisp List[/url]
+    [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=2865465286]Better Tainted Bethany / Lemegeton[/url]
+[/list]</description>
+    <version>1.1</version>
+    <visibility>Public</visibility>
+    <tag id="Lua"/>
+    <tag id="Challenges"/>
+</metadata>
