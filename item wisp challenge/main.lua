@@ -101,19 +101,17 @@ function mod:replaceItemsWithWisps(player)
   -- 4294967295 == -1
   -- 4294967294 == -2
   local i = -1
-  repeat
-    local collectibleConfig = itemConfig:GetCollectible(i)
-    
-    if collectibleConfig then
-      -- filter active items
-      -- summonable tag won't be set, but Lemegeton can still spawn passive glitched items
-      if collectibleConfig.Type ~= ItemType.ITEM_ACTIVE then
-        mod:replaceItemWithWisp(player, i)
-      end
-      
-      i = i - 1
+  local collectibleConfig = itemConfig:GetCollectible(i)
+  while collectibleConfig do
+    -- filter active items
+    -- summonable tag won't be set, but Lemegeton can still spawn passive glitched items
+    if collectibleConfig.Type ~= ItemType.ITEM_ACTIVE then
+      mod:replaceItemWithWisp(player, i)
     end
-  until collectibleConfig == nil
+    
+    i = i - 1
+    collectibleConfig = itemConfig:GetCollectible(i)
+  end
 end
 
 function mod:replaceItemWithWisp(player, item)
