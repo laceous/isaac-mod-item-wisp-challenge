@@ -12,7 +12,8 @@ mod.state = {}
 -- if true, if you quit/continue then any current wisps will behave like false
 -- Lemegeton uses true
 mod.state.adjustOrbitLayer = true
-mod.state.lemegetonPercent = 0
+mod.state.lemegetonFromStart = true -- basement/womb
+mod.state.lemegetonPercent = 0      -- 0-15
 
 function mod:onGameStart()
   if mod:HasData() then
@@ -21,6 +22,9 @@ function mod:onGameStart()
     if type(state) == 'table' then
       if type(state.adjustOrbitLayer) == 'boolean' then
         mod.state.adjustOrbitLayer = state.adjustOrbitLayer
+      end
+      if type(state.lemegetonFromStart) == 'boolean' then
+        mod.state.lemegetonFromStart = state.lemegetonFromStart
       end
       if math.type(state.lemegetonPercent) == 'integer' and state.lemegetonPercent >= 0 and state.lemegetonPercent <= 15 then
         mod.state.lemegetonPercent = state.lemegetonPercent
@@ -50,9 +54,16 @@ function mod:onNewRoom()
     return
   end
   
-  local room = game:GetRoom()
+  local level = game:GetLevel()
+  local room = level:GetCurrentRoom()
+  local stage = level:GetStage()
   
-  if room:IsFirstVisit() then
+  if room:IsFirstVisit() and
+     (
+       mod.state.lemegetonFromStart or
+       (not mod.state.lemegetonFromStart and stage >= LevelStage.STAGE4_1) -- womb/corpse
+     )
+  then
     local rng = RNG()
     rng:SetSeed(room:GetSpawnSeed(), mod.rngShiftIdx)
     
@@ -147,7 +158,7 @@ function mod:setupModConfigMenu()
         return mod.state.adjustOrbitLayer
       end,
       Display = function()
-        return (mod.state.adjustOrbitLayer and '3 layers' or '1 layer')
+        return mod.state.adjustOrbitLayer and '3 layers' or '1 layer'
       end,
       OnChange = function(b)
         mod.state.adjustOrbitLayer = b
@@ -156,9 +167,7 @@ function mod:setupModConfigMenu()
       Info = { '1: unlimited wisps', '3: lemegeton behavior / limited to 26 wisps' }
     }
   )
-  ModConfigMenu.AddText(mod.Name, 'Lemegeton', 'Single-use Lemegeton')
-  ModConfigMenu.AddText(mod.Name, 'Lemegeton', 'should be given:')
-  ModConfigMenu.AddSpace(mod.Name, 'Lemegeton')
+  ModConfigMenu.AddText(mod.Name, 'Lemegeton', 'Single-use lemegeton should be given:')
   ModConfigMenu.AddSetting(
     mod.Name,
     'Lemegeton',
@@ -177,6 +186,26 @@ function mod:setupModConfigMenu()
         mod:save()
       end,
       Info = { 'Calculated on your first visit to each room' }
+    }
+  )
+  ModConfigMenu.AddSpace(mod.Name, 'Lemegeton')
+  ModConfigMenu.AddText(mod.Name, 'Lemegeton', 'Starting in the:')
+  ModConfigMenu.AddSetting(
+    mod.Name,
+    'Lemegeton',
+    {
+      Type = ModConfigMenu.OptionType.BOOLEAN,
+      CurrentSetting = function()
+        return mod.state.lemegetonFromStart
+      end,
+      Display = function()
+        return mod.state.lemegetonFromStart and 'Basement' or 'Womb'
+      end,
+      OnChange = function(n)
+        mod.state.lemegetonFromStart = n
+        mod:save()
+      end,
+      Info = { 'Basement: basement, cellar, burning basement', 'Womb: womb, utero, scarred womb, corpse' }
     }
   )
 end
