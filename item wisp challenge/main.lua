@@ -201,8 +201,8 @@ function mod:setupModConfigMenu()
       Display = function()
         return mod.state.lemegetonFromStart and 'Basement' or 'Womb'
       end,
-      OnChange = function(n)
-        mod.state.lemegetonFromStart = n
+      OnChange = function(b)
+        mod.state.lemegetonFromStart = b
         mod:save()
       end,
       Info = { 'Basement: basement, cellar, burning basement', 'Womb: womb, utero, scarred womb, corpse' }
