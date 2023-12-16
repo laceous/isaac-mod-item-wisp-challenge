@@ -3,7 +3,8 @@ local json = require('json')
 local game = Game()
 
 mod.onGameStartHasRun = false
-mod.maxCollectibleId = nil
+mod.summonableItems = nil
+mod.glitchedIdx = -1
 mod.rngShiftIdx = 35
 
 mod.state = {}
@@ -39,6 +40,8 @@ end
 function mod:onGameExit()
   mod:save()
   mod.onGameStartHasRun = false
+  mod.summonableItems = nil
+  mod.glitchedIdx = -1
 end
 
 function mod:save()
@@ -58,12 +61,7 @@ function mod:onNewRoom()
   local room = level:GetCurrentRoom()
   local stage = level:GetStage()
   
-  if room:IsFirstVisit() and
-     (
-       mod.state.lemegetonFromStart or
-       (not mod.state.lemegetonFromStart and stage >= LevelStage.STAGE4_1) -- womb/corpse
-     )
-  then
+  if room:IsFirstVisit() and (mod.state.lemegetonFromStart or stage >= LevelStage.STAGE4_1) then -- womb/corpse
     local rng = RNG()
     rng:SetSeed(room:GetSpawnSeed(), mod.rngShiftIdx)
     
@@ -94,34 +92,30 @@ function mod:giveSingleUseLemegeton()
 end
 
 function mod:replaceItemsWithWisps(player)
-  local itemConfig = Isaac.GetItemConfig()
-  mod.maxCollectibleId = mod.maxCollectibleId or #itemConfig:GetCollectibles() - 1
+  if mod.summonableItems == nil then
+    mod.summonableItems = mod:getSummonableItems()
+  end
   
   -- normal items
-  -- some numbers don't exist
-  for i = 0, mod.maxCollectibleId do
-    local collectibleConfig = itemConfig:GetCollectible(i)
-    
-    -- can Lemegeton summon the item?
-    if collectibleConfig and collectibleConfig:HasTags(ItemConfig.TAG_SUMMONABLE) then
-      mod:replaceItemWithWisp(player, i)
-    end
+  for _, item in ipairs(mod.summonableItems) do
+    mod:replaceItemWithWisp(player, item)
   end
   
   -- glitched items
   -- 4294967295 == -1
   -- 4294967294 == -2
-  local i = -1
-  local collectibleConfig = itemConfig:GetCollectible(i)
+  local itemConfig = Isaac.GetItemConfig()
+  local collectibleConfig = itemConfig:GetCollectible(mod.glitchedIdx)
   while collectibleConfig do
     -- filter active items
     -- summonable tag won't be set, but Lemegeton can still spawn passive glitched items
     if collectibleConfig.Type ~= ItemType.ITEM_ACTIVE then
-      mod:replaceItemWithWisp(player, i)
+      table.insert(mod.summonableItems, collectibleConfig.ID)
+      mod:replaceItemWithWisp(player, collectibleConfig.ID)
     end
     
-    i = i - 1
-    collectibleConfig = itemConfig:GetCollectible(i)
+    mod.glitchedIdx = mod.glitchedIdx - 1
+    collectibleConfig = itemConfig:GetCollectible(mod.glitchedIdx)
   end
 end
 
@@ -130,6 +124,23 @@ function mod:replaceItemWithWisp(player, item)
     player:RemoveCollectible(item, true, nil, true) -- ActiveSlot.SLOT_PRIMARY
     player:AddItemWisp(item, player.Position, mod.state.adjustOrbitLayer)
   end
+end
+
+function mod:getSummonableItems()
+  local itemConfig = Isaac.GetItemConfig()
+  local items = {}
+  
+  for i = 0, #itemConfig:GetCollectibles() - 1 do
+    local collectibleConfig = itemConfig:GetCollectible(i)
+    
+    -- some numbers don't exist
+    -- can Lemegeton summon the item?
+    if collectibleConfig and collectibleConfig:HasTags(ItemConfig.TAG_SUMMONABLE) then
+      table.insert(items, collectibleConfig.ID)
+    end
+  end
+  
+  return items
 end
 
 function mod:isChallenge()
