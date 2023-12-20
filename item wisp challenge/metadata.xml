@@ -9,21 +9,34 @@ You'll start as Eden with random items. Choose your destination from the challen
 
 Mod Config Menu provides some options:
 [list]
-    [*]Choose how the items converted into wisps will orbit the player. In 3 layers: like Lemegeton, but you're limited to 26 wisps. In 1 layer: unlimited wisps. This only applies to new wisps.
+    [*]Choose how the items converted into wisps will orbit the player. In 3 layers: like Lemegeton, but you're limited to 26 wisps. In 1 layer: up to 64 wisps. This only applies to new wisps.
+    [*]Increase item wisp's health, up to 400%.
     [*]To make this a little more fair, you can choose to randomly receive a single-use Lemegeton in a consumable slot. It'll disappear once you leave the current room, so use it or lose it! The behavior is similar to the Dice Bag trinket.
+    [*]You can also choose to auto-proc Lemegeton in Sacrifice Rooms or any time you take damage.
 [/list]
 
 Note: If you quit/continue then the 3 layers orbiting the player will turn into a single layer and allow you to bypass the wisp limit later on in your run. I'm not sure if this is a bug or a feature, but it's how the game works.
 
 Note: The Dice Bag trinket can override the single-use Lemegeton.
 
+Getting a D4 or D100 was pretty boring since out-of-the-box they don't re-roll item wisps. I've added support to re-roll them, but be warned that there seems to be a hard limit of 64 total familiars (including wisps). If you're close to this number then you may end up with less item wisps after they've been re-rolled due to other familiars spawning.
+
+EID support has also been added.
+
 Recommended mods that pair well with this one:
 [list]
     [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=2966407131]Lemegeton Wisp Count[/url]
     [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=2881588359]Lemegeton Wisp List[/url]
     [*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=2865465286]Better Tainted Bethany / Lemegeton[/url]
+[/list]
+
+Console command for debugging purposes (prints/logs item wisp health):
+[list]
+    [*]item-wisp-challenge-hp
+    [*]item-wisp-challenge-hp name
+    [*]item-wisp-challenge-hp name percent
 [/list]</description>
-    <version>1.6</version>
+    <version>1.7</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Challenges"/>
