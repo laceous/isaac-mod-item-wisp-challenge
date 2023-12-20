@@ -3,9 +3,10 @@
     <!-- https://wofsauge.github.io/IsaacDocs/rep/xml/challenges.html -->
     <!-- Start as Eden -->
     <!-- Hard mode -->
-    <challenge id="1" name="Item Wisp Challenge (Mom)"       playertype="9" endstage="6"  difficulty="1" />
-    <challenge id="2" name="Item Wisp Challenge (It Lives)"  playertype="9" endstage="8"  difficulty="1" />
-    <challenge id="3" name="Item Wisp Challenge (Mother)"    playertype="9" endstage="8"  difficulty="1" secretpath="true" />
-    <challenge id="4" name="Item Wisp Challenge (Blue Baby)" playertype="9" endstage="11" difficulty="1" altpath="true" />
-    <challenge id="5" name="Item Wisp Challenge (The Lamb)"  playertype="9" endstage="11" difficulty="1" altpath="false" />
+    <challenge id="1" name="Item Wisp Challenge (Mom)"        playertype="9" endstage="6"  difficulty="1" />
+    <challenge id="2" name="Item Wisp Challenge (It Lives)"   playertype="9" endstage="8"  difficulty="1" />
+    <challenge id="3" name="Item Wisp Challenge (Mother)"     playertype="9" endstage="8"  difficulty="1" secretpath="true" />
+    <challenge id="4" name="Item Wisp Challenge (Blue Baby)"  playertype="9" endstage="11" difficulty="1" altpath="true" />
+    <challenge id="5" name="Item Wisp Challenge (The Lamb)"   playertype="9" endstage="11" difficulty="1" altpath="false" />
+    <challenge id="6" name="Item Wisp Challenge (Mega Satan)" playertype="9" endstage="11" difficulty="1" altpath="false" megasatan="true" />
 </challenges>

@@ -378,7 +378,8 @@ function mod:isChallenge()
          challenge == Isaac.GetChallengeIdByName('Item Wisp Challenge (It Lives)') or
          challenge == Isaac.GetChallengeIdByName('Item Wisp Challenge (Mother)') or
          challenge == Isaac.GetChallengeIdByName('Item Wisp Challenge (Blue Baby)') or
-         challenge == Isaac.GetChallengeIdByName('Item Wisp Challenge (The Lamb)')
+         challenge == Isaac.GetChallengeIdByName('Item Wisp Challenge (The Lamb)') or
+         challenge == Isaac.GetChallengeIdByName('Item Wisp Challenge (Mega Satan)')
 end
 
 function mod:setupEid()

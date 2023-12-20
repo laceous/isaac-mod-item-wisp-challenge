@@ -5,7 +5,7 @@
     <id>2966818059</id>
     <description>In this challenge, any items you pick up that can be summoned by Lemegeton will be converted into item wisps. Protect them or lose them!
 
-You'll start as Eden with random items. Choose your destination from the challenge menu (Mom, It Lives, Mother, Blue Baby, or The Lamb).
+You'll start as Eden with random items. Choose your destination from the challenge menu (Mom, It Lives, Mother, Blue Baby, The Lamb, or Mega Satan).
 
 Mod Config Menu provides some options:
 [list]
@@ -36,7 +36,7 @@ Console command for debugging purposes (prints/logs item wisp health):
     [*]item-wisp-challenge-hp name
     [*]item-wisp-challenge-hp name percent
 [/list]</description>
-    <version>1.7</version>
+    <version>1.8</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Challenges"/>
