@@ -19,9 +19,9 @@ Note: If you quit/continue then the 3 layers orbiting the player will turn into 
 
 Note: The Dice Bag trinket can override the single-use Lemegeton.
 
-Getting a D4 or D100 was pretty boring since out-of-the-box they don't re-roll item wisps. I've added support to re-roll them, but be warned that there seems to be a hard limit of 64 total familiars (including wisps). If you're close to this number then you may end up with less item wisps after they've been re-rolled due to other familiars spawning.
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=836319872]EID[/url] and Genesis support has been added.
 
-EID support has also been added.
+The D4 support for rolling item wisps has been moved to a [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3122288780]standalone mod[/url].
 
 Recommended mods that pair well with this one:
 [list]
@@ -36,7 +36,7 @@ Console command for debugging purposes (prints/logs item wisp health):
     [*]item-wisp-challenge-hp name
     [*]item-wisp-challenge-hp name percent
 [/list]</description>
-    <version>1.8</version>
+    <version>1.9</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Challenges"/>

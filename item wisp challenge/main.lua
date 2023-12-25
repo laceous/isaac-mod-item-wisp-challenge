@@ -2,13 +2,14 @@ local mod = RegisterMod('Item Wisp Challenge', 1)
 local json = require('json')
 local game = Game()
 
+mod.stopReplacingItemsWithWisps = false
 mod.onGameStartHasRun = false
 mod.summonableItems = nil
 mod.glitchedItems = nil
 mod.glitchedIdx = -1
-mod.rngShiftIdx = 35
 
 mod.lemegetonAutoProcOptions = { 'never', 'sacrifice room', 'any damage' }
+mod.rngShiftIdx = 35
 
 mod.state = {}
 -- true puts wisps into 3 rings around the player w/ a max number of 26
@@ -56,6 +57,7 @@ end
 
 function mod:onGameExit()
   mod:save()
+  mod.stopReplacingItemsWithWisps = false
   mod.onGameStartHasRun = false
   mod.summonableItems = nil
   mod.glitchedItems = nil
@@ -79,6 +81,8 @@ function mod:onNewRoom()
   local room = level:GetCurrentRoom()
   local stage = level:GetStage()
   
+  mod.stopReplacingItemsWithWisps = false
+  
   if room:IsFirstVisit() and (mod.state.lemegetonFromStart or stage >= LevelStage.STAGE4_1) then -- womb/corpse
     local rng = RNG()
     rng:SetSeed(room:GetSpawnSeed(), mod.rngShiftIdx)
@@ -95,7 +99,7 @@ function mod:onPlayerUpdate(player)
     return
   end
   
-  if not mod.onGameStartHasRun then
+  if not mod.onGameStartHasRun or mod.stopReplacingItemsWithWisps then
     return
   end
   
@@ -139,53 +143,18 @@ function mod:onEntityTakeDmg(entity, amount, dmgFlags, source, countdown)
   end
 end
 
--- filtered to COLLECTIBLE_D4 (includes D100, etc)
+-- filtered to COLLECTIBLE_GENESIS
 function mod:onUseItem(collectible, rng, player, useFlags, activeSlot, varData)
   if not mod:isChallenge() then
     return
   end
   
-  local playerHash = GetPtrHash(player)
-  local summonableItems = mod:getSummonableItems(true) -- check IsAvailable
-  local familiar = nil
-  local lastSubType = nil
-  local orbitLayer7 = false
-  local orbitLayer8 = false
-  local orbitLayer9 = false
+  mod.stopReplacingItemsWithWisps = true
   
   for _, v in ipairs(Isaac.FindByType(EntityType.ENTITY_FAMILIAR, FamiliarVariant.ITEM_WISP, -1, false, false)) do
-    familiar = v:ToFamiliar()
-    
-    -- this will reset item wisp health
-    if playerHash == GetPtrHash(familiar.Player) then
-      if #summonableItems <= 0 or mod:hasCollectible(CollectibleType.COLLECTIBLE_TMTRAINER) then
-        -- generate new glitched items, limited to 26 item wisps
-        familiar:Remove()
-        player:UseActiveItem(CollectibleType.COLLECTIBLE_LEMEGETON, false, false, true, false, -1, 0)
-      else
-        -- there's a hard limit of 64 familiars
-        -- removing and adding in the same frame uses up multiple slots, limiting you to half
-        -- we can set SubType, but then we still have to trigger the game to update with one final AddItemWisp
-        -- this usually still bumps up against the limit because item wisps can spawn other familiars
-        -- EvaluateItems doesn't seem to work here
-        familiar.SubType = summonableItems[rng:RandomInt(#summonableItems) + 1]
-        lastSubType = familiar.SubType
-        if familiar.OrbitLayer == 7 then
-          orbitLayer7 = true
-        elseif familiar.OrbitLayer == 8 then
-          orbitLayer8 = true
-        elseif familiar.OrbitLayer == 9 then
-          orbitLayer9 = true
-        end
-      end
-    end
-  end
-  
-  if lastSubType then
-    familiar:Remove()
-    -- adjustOrbitLayer == false : 1 layer, layer == 8 (speed < 0)
-    -- adjustOrbitLayer == true : 3 layers, layer == 7 (speed > 0), 8 (speed < 0), 9 (speed > 0)
-    player:AddItemWisp(lastSubType, player.Position, not (orbitLayer8 and not orbitLayer7 and not orbitLayer9))
+    local familiar = v:ToFamiliar()
+    local player = familiar.Player
+    player:AddCollectible(familiar.SubType, 0, false, nil, 0)
   end
 end
 
@@ -306,18 +275,17 @@ function mod:replaceItemWithWisp(player, item)
   end
 end
 
-function mod:getSummonableItems(checkIsAvailable)
+function mod:getSummonableItems()
   local itemConfig = Isaac.GetItemConfig()
   local items = {}
   
-  for i = 0, #itemConfig:GetCollectibles() - 1 do
+  -- 0 is CollectibleType.COLLECTIBLE_NULL
+  for i = 1, #itemConfig:GetCollectibles() - 1 do
     local collectibleConfig = itemConfig:GetCollectible(i)
     
     -- some numbers don't exist
     -- can Lemegeton summon the item?
-    if collectibleConfig and collectibleConfig:HasTags(ItemConfig.TAG_SUMMONABLE) and
-       (not checkIsAvailable or (checkIsAvailable and collectibleConfig:IsAvailable()))
-    then
+    if collectibleConfig and collectibleConfig:HasTags(ItemConfig.TAG_SUMMONABLE) then
       table.insert(items, collectibleConfig.ID)
     end
   end
@@ -344,18 +312,6 @@ function mod:getNewGlitchedItems()
   end
   
   return items
-end
-
-function mod:hasCollectible(collectible)
-  for i = 0, game:GetNumPlayers() - 1 do
-    local player = game:GetPlayer(i)
-    
-    if player:HasCollectible(collectible, false) then
-      return true
-    end
-  end
-  
-  return false
 end
 
 function mod:getTblIdx(tbl, val)
@@ -533,7 +489,7 @@ mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.onNewRoom)
 mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.onPlayerUpdate, 0) -- 0 is player, 1 is co-op baby
 mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, mod.onFamiliarUpdate, FamiliarVariant.ITEM_WISP)
 mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.onEntityTakeDmg, EntityType.ENTITY_PLAYER)
-mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.onUseItem, CollectibleType.COLLECTIBLE_D4)
+mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.onUseItem, CollectibleType.COLLECTIBLE_GENESIS)
 mod:AddCallback(ModCallbacks.MC_EXECUTE_CMD, mod.onExecuteCmd)
 
 if EID then
