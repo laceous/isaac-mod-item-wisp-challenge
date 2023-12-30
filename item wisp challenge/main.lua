@@ -238,6 +238,7 @@ function mod:giveSingleUseLemegeton()
   for i = 0, game:GetNumPlayers() - 1 do
     local player = game:GetPlayer(i)
     player:SetPocketActiveItem(CollectibleType.COLLECTIBLE_LEMEGETON, ActiveSlot.SLOT_POCKET2, true)
+    player:AnimateCollectible(CollectibleType.COLLECTIBLE_LEMEGETON, 'UseItem', 'PlayerPickupSparkle')
   end
 end
 
