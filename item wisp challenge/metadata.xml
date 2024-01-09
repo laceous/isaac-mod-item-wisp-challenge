@@ -36,7 +36,7 @@ Console command for debugging purposes (prints/logs item wisp health):
     [*]item-wisp-challenge-hp name
     [*]item-wisp-challenge-hp name percent
 [/list]</description>
-    <version>1.10</version>
+    <version>1.11</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Challenges"/>

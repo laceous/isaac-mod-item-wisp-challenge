@@ -162,6 +162,10 @@ end
 -- usage: item-wisp-challenge-hp name
 -- usage: item-wisp-challenge-hp name percent
 function mod:onExecuteCmd(cmd, params)
+  if not mod:isInGame() then
+    return
+  end
+  
   cmd = string.lower(cmd)
   params = string.lower(params)
   
@@ -232,6 +236,14 @@ function mod:onExecuteCmd(cmd, params)
     print(s)
     Isaac.DebugString('item-wisp-challenge-hp\n' .. s)
   end
+end
+
+function mod:isInGame()
+  if REPENTOGON then
+    return Isaac.IsInGame()
+  end
+  
+  return true
 end
 
 function mod:giveSingleUseLemegeton()
@@ -498,4 +510,12 @@ if EID then
 end
 if ModConfigMenu then
   mod:setupModConfigMenu()
+end
+
+if REPENTOGON then
+  function mod:registerCommands()
+    Console.RegisterCommand('item-wisp-challenge-hp', 'Prints/logs item wisp health (supports name and percent params)', 'Prints/logs item wisp health (supports name and percent params)', false, AutocompleteType.NONE)
+  end
+  
+  mod:registerCommands()
 end
