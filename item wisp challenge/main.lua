@@ -51,6 +51,12 @@ function mod:onGameStart(isContinue)
     end
   end
   
+  if REPENTOGON and mod:isChallenge() then
+    for _, player in ipairs(PlayerManager.GetPlayers()) do
+      mod:replaceItemsWithWisps(player)
+    end
+  end
+  
   mod.onGameStartHasRun = true
   mod:onNewRoom()
 end
@@ -90,6 +96,28 @@ function mod:onNewRoom()
     if rng:RandomInt(100) < mod.state.lemegetonPercent then
       mod:giveSingleUseLemegeton()
     end
+  end
+end
+
+function mod:onAddCollectible(collectible, charge, firstTime, slot, varData, player)
+  if not mod:isChallenge() then
+    return
+  end
+  
+  if not mod.onGameStartHasRun or mod.stopReplacingItemsWithWisps then
+    return
+  end
+  
+  local itemConfig = Isaac.GetItemConfig()
+  local collectibleConfig = itemConfig:GetCollectible(collectible)
+  
+  if collectibleConfig and
+     (
+       collectibleConfig:HasTags(ItemConfig.TAG_SUMMONABLE) or
+       (collectibleConfig.ID < 0 and collectibleConfig.Type ~= ItemType.ITEM_ACTIVE)
+     )
+  then
+    mod:replaceItemWithWisp(player, collectible)
   end
 end
 
@@ -499,7 +527,11 @@ end
 mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, mod.onGameStart)
 mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, mod.onGameExit)
 mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.onNewRoom)
-mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.onPlayerUpdate, 0) -- 0 is player, 1 is co-op baby
+if REPENTOGON then
+  mod:AddCallback(ModCallbacks.MC_POST_ADD_COLLECTIBLE, mod.onAddCollectible)
+else
+  mod:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, mod.onPlayerUpdate, 0) -- 0 is player, 1 is co-op baby
+end
 mod:AddCallback(ModCallbacks.MC_FAMILIAR_UPDATE, mod.onFamiliarUpdate, FamiliarVariant.ITEM_WISP)
 mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.onEntityTakeDmg, EntityType.ENTITY_PLAYER)
 mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.onUseItem, CollectibleType.COLLECTIBLE_GENESIS)
